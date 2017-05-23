@@ -43,7 +43,8 @@ def findMusic(xml, src, dest):
     :param dest: path of destination
     :return: nothing
     """
-    playlist = parseXml(xml)
+    playlist = ["juan"]
+    # playlist = parseXml(xml)
     os.chdir(src)
     if not os.path.exists(dest):
         os.makedirs(dest)
@@ -56,7 +57,7 @@ def findMusic(xml, src, dest):
                     shutil.copytree(srcPath, destPath)
                 else:
                     shutil.copy2(srcPath, destPath)
-                print(elem + " has been copied\t"+u"\033[1;32;49m \u2714")
+                print(elem + " has been copied\t"+u"\033[1;32;49m \u2714\033[1;32;0m")
             else:
                 print(elem + " already exist")
 
