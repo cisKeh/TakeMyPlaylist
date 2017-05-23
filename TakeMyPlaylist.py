@@ -43,8 +43,8 @@ def findMusic(xml, src, dest):
     :param dest: path of destination
     :return: nothing
     """
-    playlist = ["juan"]
-    # playlist = parseXml(xml)
+    # playlist = ["juan"]
+    playlist = parseXml(xml)
     os.chdir(src)
     if not os.path.exists(dest):
         os.makedirs(dest)
@@ -52,6 +52,8 @@ def findMusic(xml, src, dest):
         if elem in playlist:
             srcPath = os.path.join(src, elem)
             destPath = os.path.join(dest, elem)
+            # print("srcPath: "+srcPath)
+            # print("destPath:"+destPath)
             if not os.path.exists(destPath):
                 if os.path.isdir(srcPath):
                     shutil.copytree(srcPath, destPath)
@@ -75,6 +77,12 @@ if __name__ == '__main__':
                 sourcePath = arg
             if opt in ("-d", "--dest"):
                 destPath = arg
+        if (xml[0] != "/"):
+            xml = os.path.join(os.path.getcwd(),xml)
+        if (sourcePath[0] != "/"):
+            sourcePath = os.path.join(os.path.getcwd(),sourcePath)
+        if (destPath[0] != "/"):
+            destPath = os.path.join(os.path.getcwd(),destPath)
 
     except:
         print(sys.argv[0] + "-x <xmlfile> -s <source path> -d <destination path>")
