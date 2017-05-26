@@ -3,6 +3,46 @@ import getopt
 import os
 import shutil
 import sys
+import platform
+
+
+def parsingXml(xmlPath):
+    pathList = []
+    f = open(xmlPath, 'r')
+    for line in f:
+        name = ''
+        location = ''
+        if('<key>Name</key><string>' in line):
+            name = line.replace('</string>')
+        if('<key>Location</key><string>' in line):
+            if(platform.system() == 'Linux'):
+                location = line.replace('<key>Location</key><string>', '').\
+                    replace('</string>', '').\
+                    replace('%20', ' ').\
+                    replace('file://','')
+            elif(platform.system() == 'Window'):
+                location = line.replace('<key>Location</key><string>', '').\
+                    replace('</string>', '').\
+                    replace('%20', ' ').\
+                    replace('file://localhost/C:','')
+        if(name and location):
+            pathList.append([name,location])
+    return pathList
+
+
+
+def findMusic(xml,dest):
+    pathList = parsingXml(xml)
+    if not os.path.exists(dest):
+        os.makedirs(dest)
+    for elem in pathList:
+        if
+
+
+
+
+
+
 
 
 def parseXml(xmlPath):
