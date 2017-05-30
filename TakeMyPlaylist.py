@@ -28,9 +28,11 @@ def parsingXml(xmlPath):
 
 def findMusic(xml,dest):
     pathList = parsingXml(xml)
+    pathList.insert(0,'/rolo')
     if not os.path.exists(dest):
         os.makedirs(dest)
     titleList = []
+    pathNbr = 0
     for path in pathList:
         title = ''
         character = ''
@@ -43,8 +45,12 @@ def findMusic(xml,dest):
                 index += 1
             titleList.append(title)
             shutil.copy2(path,dest)
+            pathNbr += 1
+            print(title + " was copied " + u"\033[92m \u2714\033[0m\t" + str(pathNbr) + "/" + str(len(pathList)))
         except IOError:
-            print("ERROR:\t" + title + " not found\n(path \"" + path + "\" doesn't exist)")
+            print(u"\033[91mERROR\033[0m: " + title + " not found\t--->\t(path \"" + path + "\" doesn't exist)")
+    print("TOTAL MUSIC COPIED: " + str(pathNbr) + "/" + str(len(pathList)))
+
 
 if __name__ == '__main__':
     try:
@@ -65,3 +71,8 @@ if __name__ == '__main__':
         sys.exit(2)
     finally:
         findMusic(xml, destPath)
+
+
+
+
+#print(u"\033[1;32;49m \u2714\033[1;32;0m")
