@@ -6,6 +6,7 @@ import shutil
 import sys
 from urllib.parse import unquote
 import platform
+from html.parser import unescape
 
 
 #TODO: resolve unicode problem
@@ -15,10 +16,11 @@ def parsingXml(xmlPath):
     for line in f:
         if('<key>Location</key><string>' in line):
             if(platform.system() == 'Linux'):
-                pathList.append(unquote(line[30:-10]).replace("file://",""))
+                print(unescape(unquote(line[30:-10]).replace("file://","")))
+                pathList.append(unescape(unquote(line[30:-10]).replace("file://","")))
 
             elif(platform.system() == 'Windows'):
-                pathList.append(unquote(line[30:-10]).replace("file://localhost",""))
+                pathList.append(unescape(unquote(line[30:-10]).replace("file://localhost","")))
 
     return pathList
 
@@ -30,10 +32,10 @@ def findMusic(xml,dest):
         os.makedirs(dest)
     titleList = []
     for path in pathList:
+        title = ''
+        character = ''
+        index = 1
         try:
-            title = ''
-            index = 1
-            character = ''
             while (character != '/'):
                 character = path[-index]
                 if (character != '/'):
@@ -42,7 +44,7 @@ def findMusic(xml,dest):
             titleList.append(title)
             shutil.copy2(path,dest)
         except IOError:
-            print("ERROR: path \"" + path + "\" doesn't exist")
+            print("ERROR:\t" + title + " not found\n(path \"" + path + "\" doesn't exist)")
 
 if __name__ == '__main__':
     try:
