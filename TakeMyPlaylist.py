@@ -4,29 +4,22 @@ import getopt
 import os
 import shutil
 import sys
-from urllib import unquote
+from urllib.parse import unquote
 import platform
 
 
-#TODO: resolve unicode probleme
+#TODO: resolve unicode problem
 def parsingXml(xmlPath):
     pathList = []
     f = open(xmlPath, 'r')
-    name = ''
-    location = ''
     for line in f:
-        if('<key>Name</key><string>' in line):
-            name = line[26:-11]
         if('<key>Location</key><string>' in line):
             if(platform.system() == 'Linux'):
-                location = unquote(line[37:-11])
+                pathList.append(unquote(line[30:-10]).replace("file://",""))
 
-            elif(platform.system() == 'Window'):
-                location = unquote(line[47:-11])
-        if(name and location):
-            pathList.append([name,location])
-            name = ''
-            location = ''
+            elif(platform.system() == 'Windows'):
+                pathList.append(unquote(line[30:-10]).replace("file://localhost",""))
+
     return pathList
 
 
@@ -35,66 +28,22 @@ def findMusic(xml,dest):
     pathList = parsingXml(xml)
     if not os.path.exists(dest):
         os.makedirs(dest)
+    titleList = []
+    for path in pathList:
+        try:
+            title = ''
+            index = 1
+            character = ''
+            while (character != '/'):
+                character = path[-index]
+                if (character != '/'):
+                    title = character + title
+                index += 1
+            titleList.append(title)
+            shutil.copy2(path,dest)
+        except IOError:
+            print("ERROR: path \"" + path + "\" doesn't exist")
 
-
-
-
-# def parseXml(xmlPath):
-#     """
-#     Extract every artist from xml (xml come from itunes) and return it into a list
-#     :param xmlPath: path of xml
-#     :return: list of artist from Itunes playlist
-#     """
-#     resultPlaylist =[]
-#     try:
-#         f = open(xmlPath, 'r')
-#         playlist = []
-#         for line in f:
-#             if ('<key>Artist</key><string>' in line):
-#                 result = line[28:-10]
-#
-#                 if (result not in playlist):
-#                     playlist.append(result)
-#
-#         resultPlaylist = [w.replace('&#38;', '&') for w in playlist]
-#         print("###########################################")
-#         print("ARTIST FOUND IN PLAYLIST:")
-#         print(resultPlaylist)
-#         print("###########################################\n")
-#
-#     except IOError:
-#         print("ERROR: File doesn't exist or incorrect path")
-#     finally:
-#         return resultPlaylist
-#
-#
-# def findMusic(xml, src, dest):
-#     """
-#     Call parseXml() for creating a playlist with Artist Name inside.
-#     Then create the destination path and copy every existing artist(in playlist) from source to destination
-#     :param xml:path of xml file
-#     :param src: path of source
-#     :param dest: path of destination
-#     :return: nothing
-#     """
-#     playlist = parseXml(xml)
-#     os.chdir(src)
-#     if not os.path.exists(dest):
-#         os.makedirs(dest)
-#     for elem in os.listdir("."):
-#         if elem in playlist:
-#             srcPath = os.path.join(src, elem)
-#             destPath = os.path.join(dest, elem)
-#             if not os.path.exists(destPath):
-#                 if os.path.isdir(srcPath):
-#                     shutil.copytree(srcPath, destPath)
-#                 else:
-#                     shutil.copy2(srcPath, destPath)
-#                 print(elem + " has been copied\t"+u"\033[1;32;49m \u2714\033[1;32;0m")
-#             else:
-#                 print(elem + " already exist")
-#
-#
 if __name__ == '__main__':
     try:
         opts, args = getopt.getopt(sys.argv[1:], "x:d:", ["xml=", "dest="])
@@ -110,7 +59,7 @@ if __name__ == '__main__':
         if (destPath[0] != "/"):
             destPath = os.path.join(os.getcwd(),destPath)
     except:
-        print(sys.argv[0] + "-x <xmlfile> -d <destination path>")
+        print("command: "+ sys.argv[0] + "-x <xmlfile> -d <destination path>")
         sys.exit(2)
     finally:
         findMusic(xml, destPath)
