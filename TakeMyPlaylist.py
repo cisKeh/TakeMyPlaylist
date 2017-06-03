@@ -10,6 +10,7 @@ from html.parser import unescape
 
 
 #TODO: resolve unicode problem
+#TODO: Some music aren't copied because they aren't in the folder with them artist name. find them !
 def parsingXml(xmlPath):
     pathList = []
     f = open(xmlPath, 'r')
